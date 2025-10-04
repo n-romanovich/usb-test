@@ -28,7 +28,9 @@ After running the tests, **USB Test** provides:
 
 ## 📸 Screenshots
 
-
+<img width="1115" height="628" alt="image" src="https://github.com/user-attachments/assets/3c667141-680a-4d8e-91c8-bc17339a0bf2" />
+<img width="1115" height="1032" alt="image" src="https://github.com/user-attachments/assets/e7800dbc-fa24-462c-9ff3-0a32633bc1bf" />
+<img width="1101" height="255" alt="image" src="https://github.com/user-attachments/assets/c331cbf7-0408-4733-997a-875480d9f6b6" />
 
 ---
 
