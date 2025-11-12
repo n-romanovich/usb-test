@@ -8,7 +8,7 @@ HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
 int defCol = 7, errCol = 14, selCol = 10;	//Console color settings. def - default, err - error, sel - selection; col - color
 
-extern char* drives;
+extern std::vector<char> drives;
 extern bool isLangRu;
 
 

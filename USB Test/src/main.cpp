@@ -7,7 +7,7 @@
 
 using namespace std;
 
-char* drives = GetDrives();		//Char dynamic array. Contains drive letters in {'C', 'D', 'E', 'F'} format
+std::vector<char> drives = GetDrives();		//Char dynamic array. Contains drive letters in {'C', 'D', 'E', 'F'} format
 
 extern bool isLangRu;
 extern int drivesCount;

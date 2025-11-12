@@ -1,8 +1,9 @@
 #include "lang.hpp"
+#include <vector>
 
 #pragma once
 
-char* GetDrives();
-ULARGE_INTEGER GetDrivesInfo(char* drives, int selectedDrive, bool isTableNeeded);
+std::vector<char> GetDrives();
+ULARGE_INTEGER GetDrivesInfo(std::vector<char>& drives, int selectedDrive, bool isTableNeeded);
 void FormatDisk(int selectedDrive, bool isConfirmationNeeded);
-DWORD GetSectorSize(int selectedDrive, char* drives);
+DWORD GetSectorSize(int selectedDrive, std::vector<char>& drives);

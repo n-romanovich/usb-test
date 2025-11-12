@@ -1,6 +1,7 @@
 #include "include/driveinfo.hpp"
 #include <iostream>
 #include <windows.h>
+#include <vector>
 
 using namespace std;
 
@@ -17,9 +18,9 @@ DISK_GEOMETRY dg;
 
 /*
 * @brief Gets drives count and all drive letters
-* @return Returns processed array of chars with drive letters in it ({'C', 'D', 'E', 'F'}),    char*[]
+* @return Returns processed array of chars with drive letters in it ({'C', 'D', 'E', 'F'}),    std::vector<char>[]
 */
-char* GetDrives() {		
+std::vector<char> GetDrives() {
 
 	GetLogicalDriveStringsA(sizeof(drivesRaw), drivesRaw);		//Getting drives connected and putting data in drivesRaw[]
 
@@ -40,7 +41,7 @@ char* GetDrives() {
 		}
 	}
 
-	char* drivesProcessed = new char[drivesCount]();		//Initializing dynamic char array with 'drivesCount' elements.	{C, D, E, F, G}
+	std::vector<char> drivesProcessed(drivesCount, 0);		//Initializing std::vector<char> array with 'drivesCount' elements.	{C, D, E, F, G}
 
 	for (int i = 0, j = 0; j < drivesCount; i++)	//Processing drivesRaw[] information and putting it in drivesProcessed[]
 	{
@@ -59,7 +60,7 @@ char* GetDrives() {
 * @brief Returns information about available bytes on disc or displays table with information about drives.
 * 
 * @param 
-* char* drives: array with drive letters in it;
+* std::vector<char> drives: array with drive letters in it;
 * 
 * int selectedDrive: selected drives number in drives[];
 * 
@@ -70,7 +71,7 @@ char* GetDrives() {
 * 
 * @return Returns available bytes count on selected drive if selectedDrive isn't NULL (isn't provided yet)
 */
-ULARGE_INTEGER GetDrivesInfo(char* drives, int selectedDrive, bool isTableNeeded)
+ULARGE_INTEGER GetDrivesInfo(std::vector<char>& drives, int selectedDrive, bool isTableNeeded)
 {
 	ULARGE_INTEGER availableBytes, totalBytes;
 
@@ -118,7 +119,7 @@ ULARGE_INTEGER GetDrivesInfo(char* drives, int selectedDrive, bool isTableNeeded
 */
 void FormatDisk(int selectedDrive, bool isConfirmationNeeded) {
 
-	extern char* drives;
+	extern std::vector<char> drives;
 
 	string format;
 
@@ -137,11 +138,11 @@ void FormatDisk(int selectedDrive, bool isConfirmationNeeded) {
 * @param
 * int selectedDrive: selected drives number in drives[];
 *
-* char* drives: array with drive letters in it;
+* std::vector<char> drives: array with drive letters in it;
 *
 * @return Returns DWORD bd.bytesPerSector
 */
-DWORD GetSectorSize(int selectedDrive, char* drives) {
+DWORD GetSectorSize(int selectedDrive, std::vector<char>& drives) {
 
 	DWORD bytesReturned;
 

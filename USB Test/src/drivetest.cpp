@@ -24,13 +24,13 @@ extern DISK_GEOMETRY dg;
 * @param
 * int selectedDrive: Selected drives number in drives[];
 * 
-* char* drives: Array with drive letters in it;
+* std::vector<char> drives: Array with drive letters in it;
 * 
 * int selectedTest: selected test number (1 - write, 2 - write and read)
 *
 * @return Returns logical true if test completed successfully or false if not
 */
-bool DriveTestWritePart(int selectedDrive, char* drives, int selectedTest) {
+bool DriveTestWritePart(int selectedDrive, std::vector<char>& drives, int selectedTest) {
 
     GetConsoleScreenBufferInfo(hConsole, &csbi);        //Calculating console width
     int consoleWidth = csbi.srWindow.Right - csbi.srWindow.Left + 1;
@@ -178,7 +178,7 @@ bool DriveTestWritePart(int selectedDrive, char* drives, int selectedTest) {
 * @param
 * int selectedDrive: Selected drives number in drives[];
 * 
-* char* drives: Array with drive letters in it;
+* std::vector<char> drives: Array with drive letters in it;
 * 
 * int slowCountWrite, verySlowCountWrite, critCountWrite, badCountWrite: test results from write (previous) test
 * 
@@ -188,7 +188,7 @@ bool DriveTestWritePart(int selectedDrive, char* drives, int selectedTest) {
 *
 * @return Returns logical true if test completed successfully or false if not
 */
-bool DriveTestReadPart(int selectedDrive, char* drives, int slowCountWrite, int verySlowCountWrite, int critCountWrite, int badCountWrite, double writeSpeed, unsigned long long availableMegabytes) {		//Read + comparison test part, returns logical true or false,   BOOL
+bool DriveTestReadPart(int selectedDrive, std::vector<char>& drives, int slowCountWrite, int verySlowCountWrite, int critCountWrite, int badCountWrite, double writeSpeed, unsigned long long availableMegabytes) {		//Read + comparison test part, returns logical true or false,   BOOL
 
     GetConsoleScreenBufferInfo(hConsole, &csbi);        //Calculating console width
     int consoleWidth = csbi.srWindow.Right - csbi.srWindow.Left + 1;
