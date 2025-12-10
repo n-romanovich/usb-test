@@ -3,7 +3,7 @@
 **USB Test** is a lightweight and portable utility written in **C++** for checking removable drives.  
 One of the main use cases is **sector health verification**, but the tool also provides additional functionality.  
 
----
+[![Website](https://img.shields.io/badge/Website-Visit-blue?style=for-the-badge&logo=google-chrome)](https://usbtest.page.gd/)   [![SourceForge](https://img.shields.io/badge/SourceForge-Download-orange?style=for-the-badge&logo=sourceforge)](https://sourceforge.net/projects/usb-test/)   [![Feedback](https://img.shields.io/badge/Feedback-Google%20Form-green?style=for-the-badge&logo=discourse)](https://forms.gle/wEMjgvvJPWVdLcgU6)  [![Give a Star!](https://img.shields.io/github/stars/n-romanovich/usb-test?style=for-the-badge&logo=github&label=Give%20a%20Star!&color=yellow)](https://github.com/n-romanovich/usb-test/stargazers)
 
 ## 🛠 Features
 
@@ -44,8 +44,8 @@ After running the tests, **USB Test** provides:
 ⚠️ **Warning:** This utility performs read/write operations. Make sure to back up any important data before running tests.
 
 ---
-## 📫 Feedback & Contributions
 
-Feel free to open issues or submit pull requests if you’d like to improve the tool or report bugs.
+## ⚙️ Requirements
 
-Or simply fill out this [Google Form](https://forms.gle/Q7s141cQcE4pug7L7) to share feedback.
+- Windows XP or later (x64)
+- Visual C++ Redistributable for Visual Studio
