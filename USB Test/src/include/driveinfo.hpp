@@ -1,9 +1,10 @@
+#pragma once
+
 #include "lang.hpp"
 #include <vector>
 
-#pragma once
-
-std::vector<char> GetDrives();
-ULARGE_INTEGER GetDrivesInfo(std::vector<char>& drives, int selectedDrive, bool isTableNeeded);
-void FormatDisk(int selectedDrive, bool isConfirmationNeeded);
-DWORD GetSectorSize(int selectedDrive, std::vector<char>& drives);
+std::vector<char> getDrives();
+ULARGE_INTEGER getDrivesInfo(std::vector<char>& drives, int selectedDrive, bool isTableNeeded);
+void formatDisk(int selectedDrive, bool isConfirmationNeeded);
+DWORD getSectorSize(int selectedDrive, std::vector<char>& drives);
+unsigned long long getTotalMegabytes(std::vector<char>& drives, int selectedDrive);

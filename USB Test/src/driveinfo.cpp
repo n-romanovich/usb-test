@@ -5,8 +5,8 @@
 
 using namespace std;
 
-char drivesRaw[500];		//Unprocessed drives char array
-int drivesCount = 0;		//Count of drives connected
+char drivesRaw[500];		//Unprocessed array of drive letters
+int drivesCount = 0;		//Number of drives connected
 
 extern int defCol, errCol, selCol;		//Console color codes
 extern bool isLangRu;
@@ -20,18 +20,18 @@ DISK_GEOMETRY dg;
 * @brief Gets drives count and all drive letters
 * @return Returns processed array of chars with drive letters in it ({'C', 'D', 'E', 'F'}),    std::vector<char>[]
 */
-std::vector<char> GetDrives() {
+std::vector<char> getDrives() {
 
 	GetLogicalDriveStringsA(sizeof(drivesRaw), drivesRaw);		//Getting drives connected and putting data in drivesRaw[]
 
-	for (int i = 0; i < 500; i++)	//Counting drives count
+	for (int i = 0; i < 500; i++)	//Count the number of drives
 	{
 		if (drivesRaw[i] != ':' && drivesRaw[i] != '\\' && drivesRaw[i] != '\0')		//Looking for drive letters
 		{
 			drivesCount++;		//Increasing drivesCount when drive letter found
 		}
 
-		if (drivesRaw[i] == '\0') {		//Looking for end of the drivesRaw[] {... \0, \0}
+		if (drivesRaw[i] == '\0') {		//Checking for end of the drivesRaw[] {... \0, \0}
 			++i;
 
 			if (drivesRaw[i] == '\0') {
@@ -71,7 +71,7 @@ std::vector<char> GetDrives() {
 * 
 * @return Returns available bytes count on selected drive if selectedDrive isn't NULL (isn't provided yet)
 */
-ULARGE_INTEGER GetDrivesInfo(std::vector<char>& drives, int selectedDrive, bool isTableNeeded)
+ULARGE_INTEGER getDrivesInfo(std::vector<char>& drives, int selectedDrive, bool isTableNeeded)
 {
 	ULARGE_INTEGER availableBytes, totalBytes;
 
@@ -85,7 +85,7 @@ ULARGE_INTEGER GetDrivesInfo(std::vector<char>& drives, int selectedDrive, bool 
 
 	if (isTableNeeded) {		//Displaying table if needed
 
-		(isLangRu) ? std::cout << "Номер\tДиск\t\tСвободное место\t\tРазмер диска" << std::endl  : std::cout << "No.\tDrive\t\tFree space\t\tDisk capacity" << std::endl; 
+		(isLangRu) ? cout << "Номер\tДиск\t\tСвободное место\t\tРазмер диска" << endl  : cout << "No.\tDrive\t\tFree space\t\tDisk capacity" << endl; 
 
 		for (int i = 0; i < drivesCount; i++)	//Displaying table line-by-line
 		{
@@ -117,7 +117,7 @@ ULARGE_INTEGER GetDrivesInfo(std::vector<char>& drives, int selectedDrive, bool 
 * 
 * bool isConfirmationNeeded: if confirmation needed (formatting before the test), message box will be shown
 */
-void FormatDisk(int selectedDrive, bool isConfirmationNeeded) {
+void formatDisk(int selectedDrive, bool isConfirmationNeeded) {
 
 	extern std::vector<char> drives;
 
@@ -128,7 +128,7 @@ void FormatDisk(int selectedDrive, bool isConfirmationNeeded) {
 	format += std::string(1, drives[selectedDrive]);
 	format += ": /q /x /y /FS:NTFS";
 
-	system(format.c_str());		//Formating drive
+	system(format.c_str());		//Formatting drive
 }
 
 
@@ -142,7 +142,7 @@ void FormatDisk(int selectedDrive, bool isConfirmationNeeded) {
 *
 * @return Returns DWORD bd.bytesPerSector
 */
-DWORD GetSectorSize(int selectedDrive, std::vector<char>& drives) {
+DWORD getSectorSize(int selectedDrive, std::vector<char>& drives) {
 
 	DWORD bytesReturned;
 
@@ -151,7 +151,7 @@ DWORD GetSectorSize(int selectedDrive, std::vector<char>& drives) {
 	devicePath += L":";
 
 	HANDLE hDevice = CreateFile(	//Opening disk
-		devicePath.c_str(),	    //Drive path
+		devicePath.c_str(),
 		GENERIC_READ,
 		FILE_SHARE_READ |
 		FILE_SHARE_WRITE,
@@ -163,7 +163,7 @@ DWORD GetSectorSize(int selectedDrive, std::vector<char>& drives) {
 
 	if (hDevice == INVALID_HANDLE_VALUE) {      //Unable to open drive
 		SetConsoleTextAttribute(hConsole, errCol);
-		(isLangRu) ? cout << "Не удалось открыть диск" : cout << "Unable to access drive";
+		(isLangRu) ? cout << "Не удалось открыть диск. Попробуйте запустить программу от имени Администратора \n" : cout << "Unable to access drive. Try running USB Test as Administrator \n";
 		system("pause"); exit(2);
 	}
 
@@ -185,4 +185,32 @@ DWORD GetSectorSize(int selectedDrive, std::vector<char>& drives) {
 	CloseHandle(hDevice);
 
 	return dg.BytesPerSector;
+}
+
+
+/*
+* @brief Calculates target drive's capacity in megabytes
+*
+* @param
+* int selectedDrive: selected drives number in drives[];
+*
+* std::vector<char> drives: array with drive letters in it;
+*
+* @return Returns total drive capacity in megabytes
+*/
+unsigned long long getTotalMegabytes(std::vector<char>& drives, int selectedDrive) {
+
+	ULARGE_INTEGER totalBytes;
+
+	if (selectedDrive != -1) {		//If selected drive is provided
+		wchar_t driveLetter = drives[selectedDrive];		//Forming drive path
+		wchar_t drivePath[4] = { driveLetter, L':' ,L'\\', L'\0' };
+		GetDiskFreeSpaceEx(drivePath, nullptr, &totalBytes, nullptr);		//Getting information about drive capacity
+
+		unsigned long long totalMegabytes = (totalBytes.QuadPart / (1024ULL * 1024ULL));	//Convert bytes to megabytes
+
+		return totalMegabytes;
+	}
+
+	return 0ULL;
 }

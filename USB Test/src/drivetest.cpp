@@ -17,6 +17,15 @@ extern bool isLangRu;
 extern int defCol, errCol, selCol;
 extern DISK_GEOMETRY dg;
 
+extern const string DATA_PATH;
+
+const int OK_DISPLAY_INTERVAL = 5000;   //Display every (5000) OK sector on drive map
+
+//Writ and Read threshold, determinates sector health
+const int OK_THRESHOLD = 75;    
+const int VERY_SLOW_THRESHOLD = 250;
+const int CRIT_THRESHOLD = 2000;
+const int FAKE_CAPACITY_BAD_COUNT = 1000;
 
 /*
 * @brief Write test part
@@ -30,32 +39,33 @@ extern DISK_GEOMETRY dg;
 *
 * @return Returns logical true if test completed successfully or false if not
 */
-bool DriveTestWritePart(int selectedDrive, std::vector<char>& drives, int selectedTest) {
+bool driveTestWritePart(int selectedDrive, std::vector<char>& drives, int selectedTest) {
 
     GetConsoleScreenBufferInfo(hConsole, &csbi);        //Calculating console width
     int consoleWidth = csbi.srWindow.Right - csbi.srWindow.Left + 1;
 
-    DWORD bytesPerSector = GetSectorSize(selectedDrive, drives);        //Getting bytes per sector count
+    DWORD bytesPerSector = getSectorSize(selectedDrive, drives);        //Getting bytes per sector count
 
     int slowCount = 0, verySlowCount = 0, critCount = 0, badCount = 0;
+    unsigned long long okCount = 0;
     int badSectorsRowCount = 0;     //Counts bad sectors in a row to detect fake drive capacity
 
-    dg.BytesPerSector = GetSectorSize(selectedDrive, drives);       //Getting one sector size in bytes
+    dg.BytesPerSector = getSectorSize(selectedDrive, drives);       //Getting one sector size in bytes
 
     string driveLetter(1, drives[selectedDrive]);  //Getting drive letter
     testFilePath = driveLetter + ":\\usb-test";     //Forming path to test file
 
-    ULARGE_INTEGER availableBytes = GetDrivesInfo(drives, selectedDrive, false);        //Gets how many bytes are available to user on the selected drive
+    ULARGE_INTEGER availableBytes = getDrivesInfo(drives, selectedDrive, false);        //Gets how many bytes are available to user on the selected drive
     unsigned long long availableMegabytes = (availableBytes.QuadPart / (1024ULL * 1024ULL));        //Gets how many Megabytes are available to user on the selected drive
 
     sectorsCount = static_cast<size_t>(availableBytes.QuadPart / dg.BytesPerSector);        //Counting sectors by dividing capacity (bytes) by one sector size
 
-    MsgBeforeTest();        //Displays sector health types and other information before testing
+    msgBeforeTest();        //Displays sector health types and other information before testing
 
     system("pause");
     system("cls");
 
-    MsgBeforeTest();    //Displays sector status types and other information before testing on a blank screen
+    msgBeforeTest();    //Displays sector status types and other information before testing on a blank screen
 
 
     //Starting write test
@@ -85,12 +95,12 @@ bool DriveTestWritePart(int selectedDrive, std::vector<char>& drives, int select
 
 
         //If 1000 sectors in a row are bad, then most likely the actual disk capacity has run out and is significantly less than stated
-        if (badSectorsRowCount > 1000) {        
+        if (badSectorsRowCount > FAKE_CAPACITY_BAD_COUNT) {        
 
             //Calculating the real capacity by subtracting the currently available bytes from the bytes available at the start of the test.
-            unsigned long long realCapacity = (availableMegabytes - ((GetDrivesInfo(drives, selectedDrive, false).QuadPart) / (1024ULL * 1024ULL)));
+            unsigned long long realCapacity = (availableMegabytes - ((getDrivesInfo(drives, selectedDrive, false).QuadPart) / (1024ULL * 1024ULL)));
 
-            MsgFakeCapacity(realCapacity);      //Displaying information about fake capacity
+            msgFakeCapacity(realCapacity);      //Displaying information about fake capacity
 
             return false;
         }
@@ -104,7 +114,7 @@ bool DriveTestWritePart(int selectedDrive, std::vector<char>& drives, int select
             badSectorsRowCount++;       //Count bad sectors in row
         }
 
-        if (writeDuration > 2000) {      //Critically slow sector if write duration is more than 2 seconds
+        if (writeDuration > CRIT_THRESHOLD) {      //Critically slow sector if write duration is more than 2 seconds
             SetConsoleTextAttribute(hConsole, (4 << 4) | 4);
             cout << "#";
             critCount++;
@@ -114,7 +124,7 @@ bool DriveTestWritePart(int selectedDrive, std::vector<char>& drives, int select
             continue;
         }
 
-        if (writeDuration > 250) {        //Very slow sector if write duration is more than 250 ms
+        if (writeDuration > VERY_SLOW_THRESHOLD) {        //Very slow sector if write duration is more than 250 ms
             SetConsoleTextAttribute(hConsole, (6 << 4) | 6);
             cout << "#";
             verySlowCount++;
@@ -123,7 +133,7 @@ bool DriveTestWritePart(int selectedDrive, std::vector<char>& drives, int select
 
         } 
         
-        if (writeDuration > 75 && writeDuration < 250) {      //Slow sector if write duration is more than 100 ms
+        if (writeDuration > OK_THRESHOLD && writeDuration < VERY_SLOW_THRESHOLD) {      //Slow sector if write duration is more than 75 ms
             SetConsoleTextAttribute(hConsole, (8 << 4) | 8);
             cout << "#";
             slowCount++;
@@ -133,7 +143,8 @@ bool DriveTestWritePart(int selectedDrive, std::vector<char>& drives, int select
             continue;
         } else {
 
-            if (i >= 5000) {        //Displays every 5000-th healthy sector
+            okCount++;
+            if (i >= OK_DISPLAY_INTERVAL) {        //Displays every 5000-th healthy sector
                 SetConsoleTextAttribute(hConsole, (15 << 4) | 15);       //Sector is healthy if it isn't slow or bad
                 cout << "#";
                 badSectorsRowCount = 0;
@@ -162,10 +173,20 @@ bool DriveTestWritePart(int selectedDrive, std::vector<char>& drives, int select
 
 
     //If selected test is 2 (write, read, and comparison test), then it will be executed
-    if (selectedTest == 2) { DriveTestReadPart(selectedDrive, drives, slowCount, verySlowCount, critCount, badCount, writeSpeed, availableMegabytes);
+    if (selectedTest == 2) { driveTestReadPart(selectedDrive, drives, okCount, slowCount, verySlowCount, critCount, badCount, writeSpeed, availableMegabytes);
     } else {
-        MsgWriteTestResults(slowCount, verySlowCount, critCount, badCount, writeSpeed);     //Or else displaying write test results
+        msgWriteTestResults(okCount, slowCount, verySlowCount, critCount, badCount, writeSpeed);     //Or else displaying write test results
+
+        SetConsoleTextAttribute(hConsole, errCol);
+        (isLangRu) ? cout << "\nДля сохранения результатов в историю проведите Write&Read тест \n" : cout << "Run a Write&Read test to save results to history. \n";
+        SetConsoleTextAttribute(hConsole, defCol);
+
+        msgFormatBeforeExiting();		//Display a message indicating that the disk will be formatted before the program closes
         system("pause");
+
+        formatDisk(selectedDrive, false);		//Format the disk before exiting the program
+
+        mainMenu();
     }
 
     return true;
@@ -182,22 +203,24 @@ bool DriveTestWritePart(int selectedDrive, std::vector<char>& drives, int select
 * 
 * int slowCountWrite, verySlowCountWrite, critCountWrite, badCountWrite: test results from write (previous) test
 * 
+* unsigned long long okCountWrite: good sectors count from write (previous) test
+* 
 * double writeSpeed: write speed from previous test to display results correctly
 * 
 * unsigned long long availableMegabytes: available drive capacity to calculate write and read speed
 *
 * @return Returns logical true if test completed successfully or false if not
 */
-bool DriveTestReadPart(int selectedDrive, std::vector<char>& drives, int slowCountWrite, int verySlowCountWrite, int critCountWrite, int badCountWrite, double writeSpeed, unsigned long long availableMegabytes) {		//Read + comparison test part, returns logical true or false,   BOOL
+bool driveTestReadPart(int selectedDrive, std::vector<char>& drives, unsigned long long okCountWrite, int slowCountWrite, int verySlowCountWrite, int critCountWrite, int badCountWrite, double writeSpeed, unsigned long long availableMegabytes) {		//Read + comparison test part, returns logical true or false,   BOOL
 
     GetConsoleScreenBufferInfo(hConsole, &csbi);        //Calculating console width
     int consoleWidth = csbi.srWindow.Right - csbi.srWindow.Left + 1;
 
-    DWORD bytesPerSector = GetSectorSize(selectedDrive, drives);        //Getting bytes per sector count
+    DWORD bytesPerSector = getSectorSize(selectedDrive, drives);        //Getting bytes per sector count
 
     int critCount = 0, badCount = 0;
 
-    dg.BytesPerSector = GetSectorSize(selectedDrive, drives);       //Getting one sector size in bytes
+    dg.BytesPerSector = getSectorSize(selectedDrive, drives);       //Getting one sector size in bytes
 
     vector<char> buffer(dg.BytesPerSector);     //Initializing buffer with size of one sector
 
@@ -229,7 +252,7 @@ bool DriveTestReadPart(int selectedDrive, std::vector<char>& drives, int slowCou
             badCount++;
         }
 
-        if (readDuration > 2000) {     //Critically slow sector if read duration is more than 2 s
+        if (readDuration > CRIT_THRESHOLD) {     //Critically slow sector if read duration is more than 2 s
             SetConsoleTextAttribute(hConsole, (4 << 4) | 4);
             cout << "#";
             critCount++;
@@ -238,7 +261,7 @@ bool DriveTestReadPart(int selectedDrive, std::vector<char>& drives, int slowCou
             continue;
         }
 
-        if (readDuration > 75 && readDuration < 250) {       //Slow sector if read duration is more than 100 ms
+        if (readDuration > OK_THRESHOLD && readDuration < VERY_SLOW_THRESHOLD) {       //Slow sector if read duration is more than 75 ms
             SetConsoleTextAttribute(hConsole, (8 << 4) | 8);
             cout << "#";
             currentChar++;
@@ -246,7 +269,7 @@ bool DriveTestReadPart(int selectedDrive, std::vector<char>& drives, int slowCou
             continue;
         }
 
-        if (readDuration > 250) {       //Very slow sector if read duration is more than 250 ms
+        if (readDuration > VERY_SLOW_THRESHOLD) {       //Very slow sector if read duration is more than 250 ms
             SetConsoleTextAttribute(hConsole, (6 << 4) | 6);
             cout << "#";
             currentChar++;
@@ -255,7 +278,7 @@ bool DriveTestReadPart(int selectedDrive, std::vector<char>& drives, int slowCou
 
         } else {
 
-            if (i > 5000) {     //Displaying every 5000-th healthy sector
+            if (i > OK_DISPLAY_INTERVAL) {     //Displaying every 5000-th healthy sector
                 SetConsoleTextAttribute(hConsole, (15 << 4) | 15);        //If sector isn't bad or slow, then it's healthy
                 cout << "#";
                 currentChar++;
@@ -279,8 +302,28 @@ bool DriveTestReadPart(int selectedDrive, std::vector<char>& drives, int slowCou
 
     SetConsoleTextAttribute(hConsole, 7);       //Read test end
 
-    MsgReadTestResults(slowCountWrite, verySlowCountWrite, critCountWrite, badCountWrite, critCount, badCount, readSpeed, writeSpeed);     //Displaying write and read tests results
+    string driveLetter(1, drives[selectedDrive]); //Converting char drive letter to std::string
+
+    pushBackData(driveLetter, getTotalMegabytes(drives, selectedDrive), slowCountWrite, verySlowCountWrite, critCountWrite, critCount, badCountWrite, badCount, writeSpeed, readSpeed); //Save test results in .json file
+
+    msgReadTestResults(okCountWrite, slowCountWrite, verySlowCountWrite, critCountWrite, badCountWrite, critCount, badCount, readSpeed, writeSpeed);     //Displaying write and read tests results
+
+    //History file path message
+    if (isLangRu) {
+        cout << "\n\nРезультаты теста сохранены в: ";   SetConsoleTextAttribute(hConsole, errCol);  cout << DATA_PATH << endl;
+    }
+    else {
+        cout << "\n\nTest results saved to: ";  SetConsoleTextAttribute(hConsole, errCol);  cout << DATA_PATH << endl;
+    }
+    SetConsoleTextAttribute(hConsole, defCol);
+
+    msgFormatBeforeExiting();		//Display a message indicating that the disk will be formatted before the program closes
+
     system("pause");
+
+    formatDisk(selectedDrive, false);		//Format the disk before exiting the program
+
+    mainMenu();
 
     return true;
 }

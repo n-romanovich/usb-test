@@ -1,5 +1,5 @@
-#include <windows.h>
-
 #pragma once
 
-void GetSystemLanguage();
+#include <windows.h>
+
+void getSystemLanguage();

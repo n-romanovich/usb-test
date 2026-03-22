@@ -2,17 +2,20 @@
 #include <iostream>
 
 //Language variable. If True - Russian; If False - English
-bool isLangRu;		
+bool isLangRu;
+
+const int RUSSIAN_LANG_ID = 1049;
 
 
 /*
 * @brief Identifies the system's language (Russian or English) by getting the system language id and comparing it to 1049 (Russian) 
 */
-void GetSystemLanguage() {
+void getSystemLanguage() {
 
 	int lang = GetSystemDefaultLangID();		//Getting system's language id
 
-	if (lang == 1049) { isLangRu = true;		//Comparing with 1049 (Russian)
+	if (lang == RUSSIAN_LANG_ID) {		//Comparing with 1049 (Russian)
+		isLangRu = true;
 	}
 	else {
 		isLangRu = false;		//If id isn't 1049,the program will use English
