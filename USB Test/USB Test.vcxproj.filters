@@ -45,6 +45,9 @@
     <ClCompile Include="src\menu.cpp">
       <Filter>Исходные файлы\cpp</Filter>
     </ClCompile>
+    <ClCompile Include="src\version.cpp">
+      <Filter>Исходные файлы\cpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\driveinfo.hpp">
@@ -73,6 +76,9 @@
     </ClInclude>
     <ClInclude Include="src\resources\resource.h">
       <Filter>Файлы ресурсов</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\version.hpp">
+      <Filter>Исходные файлы\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
