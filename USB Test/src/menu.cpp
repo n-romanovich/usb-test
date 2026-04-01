@@ -43,14 +43,17 @@ void mainMenu() {
 			break;
 
 		case 1:		//Start test
+			checkUpdates();
 			menuTest();
 			break;
 
 		case 2:		//History
+			checkUpdates();
 			menuHistory();
 			break;
 
 		case 3:		//About
+			checkUpdates();
 			msgAbout();
 	}
 }

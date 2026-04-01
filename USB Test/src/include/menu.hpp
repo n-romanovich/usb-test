@@ -4,6 +4,7 @@
 #include "messages.hpp"
 #include "json_utils.hpp"
 #include "drivetest.hpp"
+#include "version.hpp"
 
 void mainMenu();
 void menuTest();
