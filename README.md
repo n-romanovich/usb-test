@@ -56,4 +56,3 @@ After running the tests, **USB Test** provides:
 ## Requirements
 
 - Windows XP or later (x64)
-- Visual C++ Redistributable for Visual Studio

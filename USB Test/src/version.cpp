@@ -18,7 +18,7 @@ WARNING: This module sends your local "USB Test" version to a remote server
 #pragma comment(lib,"winhttp.lib")
 
 
-const std::string CLIENT_VERSION = "1.1.1";     //Client's current version string
+const std::string CLIENT_VERSION = "1.1.2";     //Client's current version string
 
 bool isAlreadyChecked = false;
 
