@@ -1,8 +1,8 @@
 /*
-WARNING: This module sends your local "USB Test" version to a remote server
-         for version checking. Only the version string is transmitted.
-         
-         No personal data is collected!
+    This module contacts a remote server to fetch the latest version
+    string for comparison.
+
+    No personal data is transmitted to the server!
 */
 
 
@@ -18,16 +18,16 @@ WARNING: This module sends your local "USB Test" version to a remote server
 #pragma comment(lib,"winhttp.lib")
 
 
-const std::string CLIENT_VERSION = "1.1.2";     //Client's current version string
+const std::string CLIENT_VERSION = "1.1.3";     //Client's current version string
 
 bool isAlreadyChecked = false;
 
 
 /*
 * @brief Reads full HTTP response safely
-* 
+*
 * @param HINTERNET hRequest: Handle to WinHTTP request
-* 
+*
 * @return std::string containing response
 */
 std::string readHttpResponse(HINTERNET hRequest) {
@@ -67,7 +67,7 @@ bool IsValidVersion(const std::string& version) {
 /*
 * @brief Compares server and client versions
 *
-* @param 
+* @param
 * const string server: Server version string
 *
 * const string client: Client version string
@@ -80,8 +80,7 @@ bool isNewerVersion(const std::string& server, const std::string& client) {
     if (sscanf_s(client.c_str(), "%d.%d.%d", &c1, &c2, &c3) != 3) return false;     //Parse client
 
     if (s1 != c1) return s1 > c1;   //Compare major
-    if (s2 != c2) return s2 > c2;   //Compare minor
-    return s3 > c3;                 //Compare patch
+    return s2 > c2;                 //Compare minor
 }
 
 int checkUpdates() {
@@ -154,7 +153,7 @@ int checkUpdates() {
 
     if (statusCode != 200) {
         WinHttpCloseHandle(hRequest); WinHttpCloseHandle(hConnect); WinHttpCloseHandle(hSession);
-        return 1; 
+        return 1;
     }
 
     std::string serverVersion = readHttpResponse(hRequest);     //Read server response
@@ -165,10 +164,10 @@ int checkUpdates() {
         return 1;
     }
 
-    if (serverVersion == CLIENT_VERSION) { 
+    if (!isNewerVersion(serverVersion, CLIENT_VERSION)) {
     }
     else {
-        std::cout << "New version is available! \n\nDownload it on: \nSourceForge: usb-test.sourceforge.io/ \nGitHub: github.com/n-romanovich/usb-test \n";
+        std::cout << "\n\nNew version is available! \n\nDownload it on: \nSourceForge: usb-test.sourceforge.io/ \nGitHub: github.com/n-romanovich/usb-test \n";
         system("pause");
     }
 
