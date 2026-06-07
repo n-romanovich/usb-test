@@ -601,7 +601,7 @@ void msgAbout() {
 	SetConsoleTextAttribute(hConsole, defCol);
 
 	cout << "Author: n-romanovich on GitHub \n";
-	cout << "Official website: usbtest.page.gd \n";
+	cout << "Official website: usbtest.pro \n";
 	cout << "SourceForge: usb-test.sourceforge.io \n\n";
 
 	cout << "Version: 1.1\n\n";
