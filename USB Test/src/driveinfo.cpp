@@ -117,16 +117,23 @@ ULARGE_INTEGER getDrivesInfo(std::vector<char>& drives, int selectedDrive, bool 
 * 
 * bool isConfirmationNeeded: if confirmation needed (formatting before the test), message box will be shown
 */
-void formatDisk(int selectedDrive, bool isConfirmationNeeded) {
+void formatDisk(int selectedDrive) {
 
 	extern std::vector<char> drives;
+	extern HANDLE hConsole;
 
 	string format;
 
 	//Forming a string
 	format = "format ";
 	format += std::string(1, drives[selectedDrive]);
-	format += ": /q /x /y /FS:NTFS";
+	format += ": /q /x /y /FS:NTFS >NUL 2>&1";
+
+	cout << "Formatting drive ";
+	SetConsoleTextAttribute(hConsole, 10);
+	cout << drives[selectedDrive]; cout << ":\\";
+	SetConsoleTextAttribute(hConsole, 7);
+	cout << " — Please wait...";
 
 	system(format.c_str());		//Formatting drive
 }

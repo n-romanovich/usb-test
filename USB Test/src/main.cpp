@@ -7,6 +7,7 @@
 #include "include/json_utils.hpp"
 #include "include/history.hpp"
 #include "include/menu.hpp"
+#include "include/feedback.hpp"
 
 using namespace std;
 

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\feedback.cpp" />
     <ClCompile Include="src\menu.cpp" />
     <ClCompile Include="src\driveinfo.cpp" />
     <ClCompile Include="src\drivetest.cpp" />
@@ -30,6 +31,7 @@
     <ClCompile Include="src\version.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\include\feedback.hpp" />
     <ClInclude Include="src\include\version.hpp" />
     <ClInclude Include="src\resources\resource.h" />
     <ClInclude Include="src\include\driveinfo.hpp" />

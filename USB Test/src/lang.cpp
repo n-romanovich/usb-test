@@ -1,5 +1,6 @@
 #include "include/lang.hpp"
 #include <iostream>
+#include <windows.h>
 
 //Language variable. If True - Russian; If False - English
 bool isLangRu;
@@ -16,6 +17,8 @@ void getSystemLanguage() {
 
 	if (lang == RUSSIAN_LANG_ID) {		//Comparing with 1049 (Russian)
 		isLangRu = true;
+		SetConsoleCP(1251);
+		SetConsoleOutputCP(1251);
 	}
 	else {
 		isLangRu = false;		//If id isn't 1049,the program will use English

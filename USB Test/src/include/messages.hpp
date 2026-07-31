@@ -5,6 +5,8 @@
 #include "json.hpp"
 #include "menu.hpp"
 
+#include <string>
+
 using json = nlohmann::json;
 
 int msgSelectDrive();
@@ -22,3 +24,4 @@ void msgDisplayTestData(json jDrives, int selectedTest, int customTestNumber);
 void msgDisplayShortTestData(json jDrives, int selectedTest);
 void msgDisplayTestComparison(json jComparisonOne, json jComparisonTwo);
 void msgAbout();
+std::string msgFeedback();

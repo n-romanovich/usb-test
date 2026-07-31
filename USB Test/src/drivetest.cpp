@@ -21,7 +21,7 @@ extern const string DATA_PATH;
 
 const int OK_DISPLAY_INTERVAL = 5000;   //Display every (5000) OK sector on drive map
 
-//Writ and Read threshold, determinates sector health
+//Write and Read threshold, determinates sector health
 const int OK_THRESHOLD = 75;    
 const int VERY_SLOW_THRESHOLD = 250;
 const int CRIT_THRESHOLD = 2000;
@@ -175,6 +175,7 @@ bool driveTestWritePart(int selectedDrive, std::vector<char>& drives, int select
     //If selected test is 2 (write, read, and comparison test), then it will be executed
     if (selectedTest == 2) { driveTestReadPart(selectedDrive, drives, okCount, slowCount, verySlowCount, critCount, badCount, writeSpeed, availableMegabytes);
     } else {
+        int fbDialogAnswer = displayFeedbackDialog();    //Displays feedback request dialog
         msgWriteTestResults(okCount, slowCount, verySlowCount, critCount, badCount, writeSpeed);     //Or else displaying write test results
 
         SetConsoleTextAttribute(hConsole, errCol);
@@ -184,7 +185,9 @@ bool driveTestWritePart(int selectedDrive, std::vector<char>& drives, int select
         msgFormatBeforeExiting();		//Display a message indicating that the disk will be formatted before the program closes
         system("pause");
 
-        formatDisk(selectedDrive, false);		//Format the disk before exiting the program
+        collectFeedback(fbDialogAnswer);
+
+        formatDisk(selectedDrive);		//Format the disk before exiting the program
 
         mainMenu();
     }
@@ -306,6 +309,12 @@ bool driveTestReadPart(int selectedDrive, std::vector<char>& drives, unsigned lo
 
     pushBackData(driveLetter, getTotalMegabytes(drives, selectedDrive), slowCountWrite, verySlowCountWrite, critCountWrite, critCount, badCountWrite, badCount, writeSpeed, readSpeed); //Save test results in .json file
 
+    SetConsoleTextAttribute(hConsole, 10);
+    (isLangRu) ? cout << "\nТест чтения завершен.\n\n\n\n" : cout << "\nRead test finished.\n\n\n\n";
+    SetConsoleTextAttribute(hConsole, defCol);
+
+    int fbDialogAnswer = displayFeedbackDialog();    //Displays feedback request dialog
+
     msgReadTestResults(okCountWrite, slowCountWrite, verySlowCountWrite, critCountWrite, badCountWrite, critCount, badCount, readSpeed, writeSpeed);     //Displaying write and read tests results
 
     //History file path message
@@ -321,7 +330,9 @@ bool driveTestReadPart(int selectedDrive, std::vector<char>& drives, unsigned lo
 
     system("pause");
 
-    formatDisk(selectedDrive, false);		//Format the disk before exiting the program
+    collectFeedback(fbDialogAnswer);
+
+    formatDisk(selectedDrive);		//Format the disk before exiting the program
 
     mainMenu();
 

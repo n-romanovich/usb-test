@@ -64,6 +64,7 @@ void msgFileOpenError() {
 	system("pause");
 }
 
+
 /*
 * @brief Message for user to select test type + test selection logic
 * @param int selectedDrive: Selected drives number in drives[]
@@ -192,7 +193,7 @@ void msgFormatDisk(int selectedDrive) {
 		exit(3);
 	}
 
-	formatDisk(selectedDrive, true);
+	formatDisk(selectedDrive);
 
 }
 
@@ -265,9 +266,6 @@ void msgWriteTestResults(unsigned long long okCount, int slowCount, int verySlow
 * double readSpeed, writeSpeed: write and read speed from tests
 */
 void msgReadTestResults(unsigned long long okCountWrite, int slowCountWrite, int verySlowCountWrite, int critCountWrite, int badCountWrite, int critCount, int badCount, double readSpeed, double writeSpeed) {		//Message displays write and read tests results
-	SetConsoleTextAttribute(hConsole, 10);
-	(isLangRu) ? cout << "\nТест чтения завершен.\n\n\n\n" : cout << "\nRead test finished.\n\n\n\n";
-	SetConsoleTextAttribute(hConsole, defCol);
 
 	msgWriteTestResults(okCountWrite, slowCountWrite, verySlowCountWrite, critCountWrite, badCountWrite, writeSpeed);
 
@@ -399,7 +397,7 @@ void msgDisplayShortTestData(json jDrives, int selectedTest) {
 * 
 * @param
 * json jComparisonOne: JSON array one
-* json jCompariosnTwo: JSON array two
+* json jComparisonTwo: JSON array two
 * 
 */
 void msgDisplayTestComparison(json jComparisonOne, json jComparisonTwo) {
@@ -604,7 +602,7 @@ void msgAbout() {
 	cout << "Official website: usbtest.pro \n";
 	cout << "SourceForge: usb-test.sourceforge.io \n\n";
 
-	cout << "Version: 1.1\n\n";
+	cout << "Version: 1.1.4\n\n";
 
 	cout << "Thanks for using USB Test! \n\n";
 
@@ -612,4 +610,112 @@ void msgAbout() {
 
 	mainMenu();
 
+}
+
+
+/*
+* @brief Displays a feedback message and collects user response
+* 
+* @return Returns formatted user's response (X Stars, COMMENT: Y, SGSTN: Z)
+*/
+string msgFeedback() {
+	int rate;
+	string feedback;
+	//First question (rate), Russian
+	if (isLangRu) {
+		SetConsoleTextAttribute(hConsole, menuCol);
+		cout << "Оцените программу от 1 до 5 баллов: "; cin >> rate;
+		SetConsoleTextAttribute(hConsole, defCol);
+
+		system("cls");
+
+
+		//Second question (feedback) if rate is equal or higher than 5, Russian
+		if (rate >= 5) {	
+			SetConsoleTextAttribute(hConsole, menuCol);
+			cout << "Спасибо за оценку! Выберите то, что понравилось больше всего (1, 2...), придумайте текст сами или просто оставьте отзыв на SourceForge.\n";
+			cout << "Вы можете как выбрать только варианты ответа, так и дополнить их своими комментариями: \n\n";
+			SetConsoleTextAttribute(hConsole, defCol);
+
+			cout << "1. Дизайн \n2. Скорость \n3. Удобство \n4. Функционал \n5.Точность \n6. Практичность \n7. Другое\n\n";
+
+			cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+			getline(cin, feedback);
+		}
+
+		//Second question (feedback) if rate is lower than 5, Russian
+		else {
+			SetConsoleTextAttribute(hConsole, menuCol);
+			cout << "Спасибо за оценку! Выберите то, что не понравилось (1, 2...) или придумайте текст сами:\n";
+			cout << "Вы можете как выбрать только варианты ответа, так и дополнить их своими комментариями: \n\n";
+			SetConsoleTextAttribute(hConsole, defCol);
+
+			cout << "1. Дизайн \n2. Скорость \n3. Удобство \n4. Функционал \n5. Точность \n6. Практичность \n7. Баги/Краши \n8.Другое\n\n";
+
+			cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+			getline(cin, feedback);
+		}
+	}
+
+	//First question (rate), English
+	else {
+		SetConsoleTextAttribute(hConsole, menuCol);
+		cout << "Rate your experience honestly (1-5): "; cin >> rate;
+		SetConsoleTextAttribute(hConsole, defCol);
+
+		system("cls");
+
+
+		//Second question (feedback) if rate is equal or higher than 5, English
+		if (rate == 5) {
+			SetConsoleTextAttribute(hConsole, menuCol);
+			cout << "Thanks for the rating! Select what you liked most (1, 2...), type your own thoughts, or leave a review on SourceForge \ninstead.\n";
+			cout << "You can either select the options below, type your own comments, or do both: \n\n";
+			SetConsoleTextAttribute(hConsole, defCol);
+
+			cout << "1. Design \n2. Speed \n3. Usability \n4. Features \n5. Accuracy \n6. Utility \n7. Other\n\n";
+
+			cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+			getline(cin, feedback);
+		}
+
+		//Second question (feedback) if rate is lower than 5, English
+		else {
+			SetConsoleTextAttribute(hConsole, menuCol);
+			cout << "Thanks for the rating! Select what went wrong (1, 2...) or type your own thoughts.\n";
+			cout << "You can either select the options below, type your own comments, or do both: \n\n";
+			SetConsoleTextAttribute(hConsole, defCol);
+
+			cout << "1. Design \n2. Speed \n3. Usability \n4. Features \n5. Accuracy \n6. Utility \n7. Bugs \n8. Other\n\n";
+
+			cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+			getline(cin, feedback);
+
+			
+			
+		}
+	}
+	system("cls");
+
+	//Third question (suggestion)
+	string suggestion;
+	if (isLangRu) {		//Russian
+		SetConsoleTextAttribute(hConsole, menuCol);
+		cout << "Пожалуйста, расскажите, чего, по вашему мнению, USB Test не хватает больше всего, после чего программа перейдет к безопасному форматированию USB-накопителя перед выходом: \n";
+		SetConsoleTextAttribute(hConsole, defCol);
+
+		getline(cin, suggestion);
+		cout << "\nСпасибо за ответ!\n";
+	}
+	else {		//English
+		SetConsoleTextAttribute(hConsole, menuCol);
+		cout << "What missing feature would make USB Test better? Please share your thoughts, and then the app will safely format your \nUSB drive: \n";
+		SetConsoleTextAttribute(hConsole, defCol);
+
+		getline(cin, suggestion);
+		cout << "\nThank you for your honest feedback!\n";
+	}
+
+	//Return feedback string
+	return to_string(rate) + " Stars, COMMENT: " + feedback + " SGSTN: " + suggestion;
 }

@@ -23,7 +23,7 @@ void mainMenu() {
 	system("cls");
 
 	SetConsoleTextAttribute(hConsole, menuCol);
-	cout << "USB TEST v1.1 by n-romanovich \n\n";
+	cout << "USB TEST v1.1.4 by n-romanovich \n\n";
 	SetConsoleTextAttribute(hConsole, defCol);
 
 	(isLangRu) ? cout << "1.\t" << "Начать тест \n" : cout << "1.\t" << "Start Test \n";

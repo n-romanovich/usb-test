@@ -18,7 +18,7 @@
 #pragma comment(lib,"winhttp.lib")
 
 
-const std::string CLIENT_VERSION = "1.1.3";     //Client's current version string
+const std::string CLIENT_VERSION = "1.1.4";     //Client's current version string
 
 bool isAlreadyChecked = false;
 
