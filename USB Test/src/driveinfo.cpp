@@ -175,18 +175,19 @@ DWORD getSectorSize(int selectedDrive, std::vector<char>& drives) {
 	}
 
 
-	if (DeviceIoControl(		//Getting bytes per sector
+	if ((DeviceIoControl(		//Getting bytes per sector
 		hDevice,
 		IOCTL_DISK_GET_DRIVE_GEOMETRY,
 		NULL, 0,
 		&dg, sizeof(dg),
 		&bytesReturned,
 		NULL)
-		) {
+		) && (dg.BytesPerSector >=512 && dg.BytesPerSector <= 4096)) {
 	}
 	else {
 		SetConsoleTextAttribute(hConsole, errCol);
-		(isLangRu) ? cout << "Ошибка в получении размера сектора!" : cout << "Unable to determine sector size";
+		(isLangRu) ? cout << "Ошибка в получении размера сектора!" : cout << "Unable to determine sector size!";
+		system("pause"); exit(3);
 	}
 
 	CloseHandle(hDevice);
