@@ -23,7 +23,7 @@ void mainMenu() {
 	system("cls");
 
 	SetConsoleTextAttribute(hConsole, menuCol);
-	cout << "USB TEST v1.1.4 by n-romanovich \n\n";
+	cout << "USB TEST v1.1.5 by n-romanovich \n\n";
 	SetConsoleTextAttribute(hConsole, defCol);
 
 	(isLangRu) ? cout << "1.\t" << "Начать тест \n" : cout << "1.\t" << "Start Test \n";
@@ -36,25 +36,25 @@ void mainMenu() {
 	if (cin.fail()) { msgInputError(true); }
 
 	switch (option) {
-		default:
-			msgInputError(false);
-			system("cls");
-			mainMenu();
-			break;
+	default:
+		msgInputError(false);
+		system("cls");
+		mainMenu();
+		break;
 
-		case 1:		//Start test
-			checkUpdates();
-			menuTest();
-			break;
+	case 1:		//Start test
+		checkUpdates();
+		menuTest();
+		break;
 
-		case 2:		//History
-			checkUpdates();
-			menuHistory();
-			break;
+	case 2:		//History
+		checkUpdates();
+		menuHistory();
+		break;
 
-		case 3:		//About
-			checkUpdates();
-			msgAbout();
+	case 3:		//About
+		checkUpdates();
+		msgAbout();
 	}
 }
 
@@ -188,7 +188,7 @@ void menuComparison() {
 	//Option one
 	cin >> optionOne;
 	if (cin.fail()) { msgInputError(true); }
-	
+
 	readData();
 
 	system("cls");
