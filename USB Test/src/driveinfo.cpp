@@ -58,17 +58,17 @@ std::vector<char> getDrives() {
 
 /*
 * @brief Returns information about available bytes on disc or displays table with information about drives.
-* 
-* @param 
+*
+* @param
 * std::vector<char> drives: array with drive letters in it;
-* 
+*
 * int selectedDrive: selected drives number in drives[];
-* 
+*
 * bool isTableNeeded:
 * When the program starts, an information table with all the data this function
 * searches for is displayed on the screen. If displaying the table is not necessary,
 * but rather just information about available bytes on disk is required, isTableNeeded should be False.
-* 
+*
 * @return Returns available bytes count on selected drive if selectedDrive isn't NULL (isn't provided yet)
 */
 ULARGE_INTEGER getDrivesInfo(std::vector<char>& drives, int selectedDrive, bool isTableNeeded)
@@ -85,7 +85,7 @@ ULARGE_INTEGER getDrivesInfo(std::vector<char>& drives, int selectedDrive, bool 
 
 	if (isTableNeeded) {		//Displaying table if needed
 
-		(isLangRu) ? cout << "Номер\tДиск\t\tСвободное место\t\tРазмер диска" << endl  : cout << "No.\tDrive\t\tFree space\t\tDisk capacity" << endl; 
+		(isLangRu) ? cout << "Номер\tДиск\t\tСвободное место\t\tРазмер диска" << endl : cout << "No.\tDrive\t\tFree space\t\tDisk capacity" << endl;
 
 		for (int i = 0; i < drivesCount; i++)	//Displaying table line-by-line
 		{
@@ -95,7 +95,7 @@ ULARGE_INTEGER getDrivesInfo(std::vector<char>& drives, int selectedDrive, bool 
 
 			if (selectedDrive == i && selectedDrive != -1) { SetConsoleTextAttribute(hConsole, selCol); }		//Looking for a selected drive (if != -1) to color it's line
 			cout << i + 1 << "\t" << drives[i] << "\t\t" << availableBytes.QuadPart / (1024ULL * 1024ULL) << " MB   \t\t";
-			if (availableBytes.QuadPart < 100ULL*(1024ULL*1024ULL)) { cout << "\t"; }		//If capacity is lower than three symbols adds one tabulation
+			if (availableBytes.QuadPart < 100ULL * (1024ULL * 1024ULL)) { cout << "\t"; }		//If capacity is lower than three symbols adds one tabulation
 			cout << totalBytes.QuadPart / (1024ULL * 1024ULL) << " MB" << endl;
 
 			SetConsoleTextAttribute(hConsole, defCol);
@@ -111,10 +111,10 @@ ULARGE_INTEGER getDrivesInfo(std::vector<char>& drives, int selectedDrive, bool 
 
 /*
 * @brief Formats disk by it's number in array drives
-* 
-* @param 
+*
+* @param
 * int selectedDrive: selected drives number in drives[];
-* 
+*
 * bool isConfirmationNeeded: if confirmation needed (formatting before the test), message box will be shown
 */
 void formatDisk(int selectedDrive) {
@@ -175,18 +175,19 @@ DWORD getSectorSize(int selectedDrive, std::vector<char>& drives) {
 	}
 
 
-	if (DeviceIoControl(		//Getting bytes per sector
+	if ((DeviceIoControl(		//Getting bytes per sector
 		hDevice,
 		IOCTL_DISK_GET_DRIVE_GEOMETRY,
 		NULL, 0,
 		&dg, sizeof(dg),
 		&bytesReturned,
 		NULL)
-		) {
+		) && (dg.BytesPerSector >= 512 && dg.BytesPerSector <= 4096)) {
 	}
 	else {
 		SetConsoleTextAttribute(hConsole, errCol);
-		(isLangRu) ? cout << "Ошибка в получении размера сектора!" : cout << "Unable to determine sector size";
+		(isLangRu) ? cout << "Ошибка в получении размера сектора!" : cout << "Unable to determine sector size!";
+		system("pause"); exit(3);
 	}
 
 	CloseHandle(hDevice);
